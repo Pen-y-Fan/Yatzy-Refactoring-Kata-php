@@ -1,242 +1,181 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yatzy;
 
+use Exception;
+
 class Yatzy
 {
-    public static function chance($d1, $d2, $d3, $d4, $d5)
+    /**
+     * @var Dice[]
+     */
+    private array $dice = [];
+
+    /**
+     * @var int[]
+     */
+    private array $counts;
+
+    /**
+     * @throws Exception
+     */
+    public function __construct(Dice $dice1, Dice $dice2, Dice $dice3, Dice $dice4, Dice $dice5)
     {
-        $total = 0;
-        $total += $d1;
-        $total += $d2;
-        $total += $d3;
-        $total += $d4;
-        $total += $d5;
-        return $total;
+        $this->dice[0] = $dice1;
+        $this->dice[1] = $dice2;
+        $this->dice[2] = $dice3;
+        $this->dice[3] = $dice4;
+        $this->dice[4] = $dice5;
+
+        $this->calculateCounts();
     }
 
-    public static function yatzyScore($dice)
+    public function chance(): int
     {
-        $counts = array_fill(0, count($dice) + 1, 0);
-        foreach ($dice as $die) {
-            $counts[$die - 1] += 1;
+        return array_reduce($this->dice, static function (int $acc, Dice $dice) {
+            return $dice->getDice() + $acc;
+        }, 0);
+    }
+
+    public function yatzyScore(): int
+    {
+        return in_array(5, $this->counts, true) ? 50 : 0;
+    }
+
+    public function ones(): int
+    {
+        return $this->getDiceCountOf(1);
+    }
+
+    public function twos(): int
+    {
+        return $this->getDiceCountOf(2);
+    }
+
+    public function threes(): int
+    {
+        return $this->getDiceCountOf(3);
+    }
+
+    public function fours(): int
+    {
+        return $this->getDiceCountOf(4);
+    }
+
+    public function fives(): int
+    {
+        return $this->getDiceCountOf(5);
+    }
+
+    public function sixes(): int
+    {
+        return $this->getDiceCountOf(6);
+    }
+
+    public function onePair(): int
+    {
+        if (!in_array(2, $this->counts, true)) {
+            return 0;
         }
-        foreach (range(0, count($counts) - 1) as $i) {
-            if ($counts[$i] == 5)
-                return 50;
-        }
-        return 0;
-    }
 
-    public static function ones($d1, $d2, $d3, $d4, $d5)
-    {
-        $sum = 0;
-        if ($d1 == 1)
-            $sum += 1;
-        if ($d2 == 1)
-            $sum += 1;
-        if ($d3 == 1)
-            $sum += 1;
-        if ($d4 == 1)
-            $sum += 1;
-        if ($d5 == 1)
-            $sum += 1;
-
-        return $sum;
-    }
-
-    public static function twos($d1, $d2, $d3, $d4, $d5)
-    {
-        $sum = 0;
-        if ($d1 == 2)
-            $sum += 2;
-        if ($d2 == 2)
-            $sum += 2;
-        if ($d3 == 2)
-            $sum += 2;
-        if ($d4 == 2)
-            $sum += 2;
-        if ($d5 == 2)
-            $sum += 2;
-
-        return $sum;
-    }
-
-    public static function threes($d1, $d2, $d3, $d4, $d5)
-    {
-        $s = 0;
-        if ($d1 == 3)
-            $s += 3;
-        if ($d2 == 3)
-            $s += 3;
-        if ($d3 == 3)
-            $s += 3;
-        if ($d4 == 3)
-            $s += 3;
-        if ($d5 == 3)
-            $s += 3;
-
-        return $s;
-    }
-
-    public function __construct($d1, $d2, $d3, $d4, $_5)
-    {
-        $this->dice = array_fill(0, 6, 0);
-        $this->dice[0] = $d1;
-        $this->dice[1] = $d2;
-        $this->dice[2] = $d3;
-        $this->dice[3] = $d4;
-        $this->dice[4] = $_5;
-    }
-
-    public function fours()
-    {
-        $sum = 0;
-        for ($at = 0; $at != 5; $at++) {
-            if ($this->dice[$at] == 4) {
-                $sum += 4;
+        $counts = array_reverse($this->counts);
+        foreach ($counts as $dice => $count) {
+            if ($count === 2) {
+                return (6 - $dice) * 2;
             }
         }
-        return $sum;
-    }
-
-    public function Fives()
-    {
-        $s = 0;
-        $i = 0;
-        for ($i = 0; $i < 5; $i++)
-            if ($this->dice[$i] == 5)
-                $s = $s + 5;
-        return $s;
-    }
-
-    public function sixes()
-    {
-        $sum = 0;
-        for ($at = 0; $at < 5; $at++)
-            if ($this->dice[$at] == 6)
-                $sum = $sum + 6;
-        return $sum;
-    }
-
-    public static function score_pair($d1, $d2, $d3, $d4, $d5)
-    {
-        $counts = array_fill(0, 6, 0);
-        $counts[$d1 - 1] += 1;
-        $counts[$d2 - 1] += 1;
-        $counts[$d3 - 1] += 1;
-        $counts[$d4 - 1] += 1;
-        $counts[$d5 - 1] += 1;
-        for ($at = 0; $at != 6; $at++)
-            if ($counts[6 - $at - 1] == 2)
-                return (6 - $at) * 2;
         return 0;
     }
 
-    public static function two_pair($d1, $d2, $d3, $d4, $d5)
+    public function twoPair(): int
     {
-        $counts = array_fill(0, 6, 0);
-        $counts[$d1 - 1] += 1;
-        $counts[$d2 - 1] += 1;
-        $counts[$d3 - 1] += 1;
-        $counts[$d4 - 1] += 1;
-        $counts[$d5 - 1] += 1;
-        $n = 0;
+        $counts = array_filter($this->counts, static function ($count) {
+            return $count >= 2;
+        });
+
+        if (count($counts) !== 2) {
+            return 0;
+        }
+
         $score = 0;
-        for ($i = 0; $i != 6; $i++)
-            if ($counts[6 - $i - 1] >= 2) {
-                $n = $n + 1;
-                $score += (6 - $i);
-            }
-
-        if ($n == 2)
-            return $score * 2;
-        else
-            return 0;
-    }
-
-    public static function three_of_a_kind($d1, $d2, $d3, $d4, $d5)
-    {
-        $t = array_fill(0, 6, 0);
-        $t[$d1 - 1] += 1;
-        $t[$d2 - 1] += 1;
-        $t[$d3 - 1] += 1;
-        $t[$d4 - 1] += 1;
-        $t[$d5 - 1] += 1;
-        for ($i = 0; $i != 6; $i++)
-            if ($t[$i] >= 3)
-                return ($i + 1) * 3;
-        return 0;
-    }
-
-    public static function smallStraight($d1, $d2, $d3, $d4, $d5)
-    {
-        $tallies = array_fill(0, 6, 0);
-        $tallies[$d1 - 1] += 1;
-        $tallies[$d2 - 1] += 1;
-        $tallies[$d3 - 1] += 1;
-        $tallies[$d4 - 1] += 1;
-        $tallies[$d5 - 1] += 1;
-        if ($tallies[0] == 1 &&
-            $tallies[1] == 1 &&
-            $tallies[2] == 1 &&
-            $tallies[3] == 1 &&
-            $tallies[4] == 1)
-            return 15;
-        return 0;
-    }
-
-    public static function largeStraight($d1, $d2, $d3, $d4, $d5)
-    {
-        $tallies = array_fill(0, 6, 0);
-        $tallies[$d1 - 1] += 1;
-        $tallies[$d2 - 1] += 1;
-        $tallies[$d3 - 1] += 1;
-        $tallies[$d4 - 1] += 1;
-        $tallies[$d5 - 1] += 1;
-        if ($tallies[1] == 1 &&
-            $tallies[2] == 1 &&
-            $tallies[3] == 1 &&
-            $tallies[4] == 1 &&
-            $tallies[5] == 1)
-            return 20;
-        return 0;
-    }
-
-    public static function fullHouse($d1, $d2, $d3, $d4, $d5)
-    {
-        $tallies = [];
-        $_2 = false;
-        $i = 0;
-        $_2_at = 0;
-        $_3 = False;
-        $_3_at = 0;
-
-        $tallies = array_fill(0, 6, 0);
-        $tallies[$d1 - 1] += 1;
-        $tallies[$d2 - 1] += 1;
-        $tallies[$d3 - 1] += 1;
-        $tallies[$d4 - 1] += 1;
-        $tallies[$d5 - 1] += 1;
-
-        foreach (range(0, 5) as $i) {
-            if ($tallies[$i] == 2) {
-                $_2 = True;
-                $_2_at = $i + 1;
-            }
+        foreach ($counts as $dice => $count) {
+            $score += $dice;
         }
 
-        foreach (range(0, 5) as $i) {
-            if ($tallies[$i] == 3) {
-                $_3 = True;
-                $_3_at = $i + 1;
-            }
+        return $score * 2;
+    }
+
+    public function three_of_a_kind(): int
+    {
+        $counts = array_filter($this->counts, static function ($count) {
+            return $count >= 3;
+        });
+
+        if (count($counts) === 0) {
+            return 0;
         }
 
-        if ($_2 && $_3)
-            return $_2_at * 2 + $_3_at * 3;
-        else
+        return array_key_first($counts) * 3;
+    }
+
+    public function smallStraight(): int
+    {
+        $smallStraight = $this->counts;
+        array_pop($smallStraight);
+
+        return $this->isStraight($smallStraight) ? 15 : 0;
+    }
+
+    public function largeStraight(): int
+    {
+        $largeStraight = $this->counts;
+        array_shift($largeStraight);
+
+        return $this->isStraight($largeStraight) ? 20 : 0;
+    }
+
+    public function fullHouse(): int
+    {
+        $counts = array_filter($this->counts, static function ($count) {
+            return $count === 2 || $count === 3;
+        });
+
+        if (count($counts) !== 2) {
             return 0;
+        }
+
+        $sum = 0;
+        foreach ($counts as $dice => $count) {
+            $sum += $count * $dice;
+        }
+
+        return $sum;
+    }
+
+    private function getDiceCountOf(int $dice): int
+    {
+        return $this->counts[$dice] * $dice;
+    }
+
+    /**
+     * @param int[] $straight
+     */
+    private function isStraight(array $straight): bool
+    {
+        return array_reduce($straight, static function ($acc, $count) {
+                return $count === 1 ? ++$acc : $acc;
+            }, 0) === 5;
+    }
+
+    private function calculateCounts(): void
+    {
+        $this->counts = array_fill(1, 6, 0);
+        ++$this->counts[$this->dice[0]->getDice()];
+        ++$this->counts[$this->dice[1]->getDice()];
+        ++$this->counts[$this->dice[2]->getDice()];
+        ++$this->counts[$this->dice[3]->getDice()];
+        ++$this->counts[$this->dice[4]->getDice()];
     }
 }

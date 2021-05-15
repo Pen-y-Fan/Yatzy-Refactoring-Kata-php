@@ -9,3 +9,8 @@ parameters:
 
     # The level 8 is the highest level
     level: 8
+
+    ignoreErrors:
+        -
+            message: '#Parameter \#1 \$dice of class Yatzy\\Dice constructor expects int, string given.#'
+            path: tests\YatzyTest.php

@@ -1,110 +1,876 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yatzy\Tests;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
+use Yatzy\Dice;
 use Yatzy\Yatzy;
 
 class YatzyTest extends TestCase
 {
-
-    public function test_chance_scores_sum_of_all_dice(): void
+    /**
+     * @throws Exception
+     */
+    public function testChanceScoresSumOfAllDice(): void
     {
-        $expected = 15;
-        $actual = Yatzy::chance(2, 3, 4, 5, 1);
-        self::assertSame($expected, $actual);
-        self::assertSame(16, Yatzy::chance(3, 3, 4, 5, 1));
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5),
+                new Dice(1)
+            )
+            )
+                ->chance()
+        );
+        self::assertSame(
+            16,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5),
+                new Dice(1)
+            )
+            )
+                ->chance()
+        );
     }
 
-    public function test_yatzy_scores_50(): void
+    /**
+     * @throws Exception
+     */
+    public function testOnesScoreSumOfOnes(): void
     {
-        $expected = 50;
-        $actual = Yatzy::yatzyScore([4, 4, 4, 4, 4]);
-        self::assertSame($expected, $actual);
-        self::assertSame(50, Yatzy::yatzyScore([6, 6, 6, 6, 6]));
-        self::assertSame(0, Yatzy::yatzyScore([6, 6, 6, 6, 3]));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(2),
+                new Dice(2),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->ones()
+        );
+        self::assertSame(
+            1,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->ones()
+        );
+        self::assertSame(
+            2,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(2),
+                new Dice(2),
+                new Dice(1),
+                new Dice(1)
+            )
+            )
+                ->ones()
+        );
+        self::assertSame(
+            4,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(2)
+            )
+            )
+                ->ones()
+        );
     }
 
-    public function test_1s(): void
+    /**
+     * @throws Exception
+     */
+    public function testTwosScoreSumOfTwos(): void
     {
-        self::assertSame(1, Yatzy::ones(1, 2, 3, 4, 5));
-        self::assertSame(2, Yatzy::ones(1, 2, 1, 4, 5));
-        self::assertSame(0, Yatzy::ones(6, 2, 2, 4, 5));
-        self::assertSame(4, Yatzy::ones(1, 2, 1, 1, 1));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(3),
+                new Dice(3),
+                new Dice(3)
+            )
+            )
+                ->twos()
+        );
+        self::assertSame(
+            4,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(3),
+                new Dice(2),
+                new Dice(6)
+            )
+            )
+                ->twos()
+        );
+        self::assertSame(
+            10,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(2),
+                new Dice(2),
+                new Dice(2),
+                new Dice(2)
+            )
+            )
+                ->twos()
+        );
     }
 
-    public function test_2s(): void
+    /**
+     * @throws Exception
+     */
+    public function testThreesScoreSumOfThrees(): void
     {
-        self::assertSame(4, Yatzy::twos(1, 2, 3, 2, 6));
-        self::assertSame(10, Yatzy::twos(2, 2, 2, 2, 2));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(4),
+                new Dice(5),
+                new Dice(6)
+            )
+            )
+                ->threes()
+        );
+        self::assertSame(
+            6,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(3),
+                new Dice(2),
+                new Dice(3)
+            )
+            )
+                ->threes()
+        );
+        self::assertSame(
+            12,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(3),
+                new Dice(3),
+                new Dice(1)
+            )
+            )
+                ->threes()
+        );
     }
 
-    public function test_threes(): void
+    /**
+     * @throws Exception
+     */
+    public function testFoursScoreSumOfFours(): void
     {
-        self::assertSame(6, Yatzy::threes(1, 2, 3, 2, 3));
-        self::assertSame(12, Yatzy::threes(2, 3, 3, 3, 3));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fours()
+        );
+        self::assertSame(
+            4,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fours()
+        );
+        self::assertSame(
+            8,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fours()
+        );
+        self::assertSame(
+            12,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(4),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fours()
+        );
     }
 
-    public function test_fours_test(): void
+    /**
+     * @throws Exception
+     */
+    public function testFivesScoreSumOfFives(): void
     {
-        self::assertSame(12, (new Yatzy(4, 4, 4, 5, 5))->fours());
-        self::assertSame(8, (new Yatzy(4, 4, 5, 5, 5))->fours());
-        self::assertSame(4, (new Yatzy(4, 5, 5, 5, 5))->fours());
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1)
+            )
+            )
+                ->fives()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fives()
+        );
+        self::assertSame(
+            10,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(4),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fives()
+        );
+        self::assertSame(
+            20,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fives()
+        );
     }
 
-    public function test_fives(): void
+    /**
+     * @throws Exception
+     */
+    public function testSixesScoreSumOfSixes(): void
     {
-        self::assertSame(10, (new Yatzy(4, 4, 4, 5, 5))->Fives());
-        self::assertSame(15, (new Yatzy(4, 4, 5, 5, 5))->Fives());
-        self::assertSame(20, (new Yatzy(4, 5, 5, 5, 5))->Fives());
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(4),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->sixes()
+        );
+        self::assertSame(
+            6,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(6),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->sixes()
+        );
+        self::assertSame(
+            18,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(5),
+                new Dice(6),
+                new Dice(6),
+                new Dice(5)
+            )
+            )
+                ->sixes()
+        );
     }
 
-    public function sixes_test(): void
+    /**
+     * @throws Exception
+     */
+    public function testOnePairScoresSumOfBestPair(): void
     {
-        self::assertSame(0, (new Yatzy(4, 4, 4, 5, 5))->sixes());
-        self::assertSame(6, (new Yatzy(4, 4, 6, 5, 5))->sixes());
-        self::assertSame(18, (new Yatzy(6, 5, 6, 6, 5))->sixes());
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->onePair()
+        );
+        self::assertSame(
+            2,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(3),
+                new Dice(5),
+                new Dice(6)
+            )
+            )
+                ->onePair()
+        );
+        self::assertSame(
+            10,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(3),
+                new Dice(3),
+                new Dice(3),
+                new Dice(5)
+            )
+            )
+                ->onePair()
+        );
+        self::assertSame(
+            12,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(6),
+                new Dice(5),
+                new Dice(5),
+                new Dice(4)
+            )
+            )
+                ->onePair()
+        );
+        self::assertSame(
+            12,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(5),
+                new Dice(6),
+                new Dice(6),
+                new Dice(4)
+            )
+            )
+                ->onePair()
+        );
     }
 
-    public function test_one_pair(): void
+    /**
+     * @throws Exception
+     */
+    public function testTwoDifferentPairsOfDiceScoresSumOfDiceInThoseTwoPairs(): void
     {
-        self::assertSame(6, Yatzy::score_pair(3, 4, 3, 5, 6));
-        self::assertSame(10, Yatzy::score_pair(5, 3, 3, 3, 5));
-        self::assertSame(12, Yatzy::score_pair(5, 3, 6, 6, 5));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(6),
+                new Dice(5),
+                new Dice(4)
+            )
+            )
+                ->twoPair()
+        );
+        // 4 of a kind is not 2 *different* pairs
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(2)
+            )
+            )
+                ->twoPair()
+        );
+        self::assertSame(
+            6,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(2),
+                new Dice(2),
+                new Dice(5)
+            )
+            )
+                ->twoPair()
+        );
+        self::assertSame(
+            22,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(5),
+                new Dice(5),
+                new Dice(6),
+                new Dice(6)
+            )
+            )
+                ->twoPair()
+        );
     }
 
-    public function test_two_Pair(): void
+    /**
+     * @throws Exception
+     */
+    public function testThreeOfAKindScoreSumOfThreeDice(): void
     {
-        self::assertSame(16, Yatzy::two_pair(3, 3, 5, 4, 5));
-        self::assertSame(18, Yatzy::two_pair(3, 3, 6, 6, 6));
-        self::assertSame(0, Yatzy::two_pair(3, 3, 6, 5, 4));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(4),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->three_of_a_kind()
+        );
+        self::assertSame(
+            9,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->three_of_a_kind()
+        );
+        self::assertSame(
+            9,
+            (
+            new Yatzy(
+                new Dice(3),
+                new Dice(3),
+                new Dice(3),
+                new Dice(2),
+                new Dice(1)
+            )
+            )
+                ->three_of_a_kind()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(3),
+                new Dice(5),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->three_of_a_kind()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->three_of_a_kind()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->three_of_a_kind()
+        );
     }
 
-    public function test_three_of_a_kind(): void
+    /**
+     * @throws Exception
+     */
+    public function testSmallStraightScoresFifteen(): void
     {
-        self::assertSame(9, Yatzy::three_of_a_kind(3, 3, 3, 4, 5));
-        self::assertSame(15, Yatzy::three_of_a_kind(5, 3, 5, 4, 5));
-        self::assertSame(9, Yatzy::three_of_a_kind(3, 3, 3, 2, 1));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(2),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->smallStraight()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->smallStraight()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5),
+                new Dice(1)
+            )
+            )
+                ->smallStraight()
+        );
+        self::assertSame(
+            15,
+            (
+            new Yatzy(
+                new Dice(5),
+                new Dice(4),
+                new Dice(3),
+                new Dice(2),
+                new Dice(1)
+            )
+            )
+                ->smallStraight()
+        );
     }
 
-    public function test_smallStraight(): void
+    /**
+     * @throws Exception
+     */
+    public function testLargeStraightScoresTwenty(): void
     {
-        self::assertSame(15, Yatzy::smallStraight(1, 2, 3, 4, 5));
-        self::assertSame(15, Yatzy::smallStraight(2, 3, 4, 5, 1));
-        self::assertSame(0, Yatzy::smallStraight(1, 2, 2, 4, 5));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(2),
+                new Dice(2),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->largeStraight()
+        );
+        self::assertSame(
+            20,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5),
+                new Dice(6)
+            )
+            )
+                ->largeStraight()
+        );
+        self::assertSame(
+            20,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5)
+            )
+            )
+                ->largeStraight()
+        );
     }
 
-    public function test_largeStraight(): void
+    /**
+     * @throws Exception
+     */
+    public function testFullHouseSumOfOnePairAndThreeDice(): void
     {
-        self::assertSame(20, Yatzy::largeStraight(6, 2, 3, 4, 5));
-        self::assertSame(20, Yatzy::largeStraight(2, 3, 4, 5, 6));
-        self::assertSame(0, Yatzy::largeStraight(1, 2, 2, 4, 5));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(2),
+                new Dice(3),
+                new Dice(4),
+                new Dice(5),
+                new Dice(6)
+            )
+            )
+                ->fullHouse()
+        );
+        self::assertSame(
+            8,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(2),
+                new Dice(2),
+                new Dice(2)
+            )
+            )
+                ->fullHouse()
+        );
+        self::assertSame(
+            27,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(6),
+                new Dice(5),
+                new Dice(5),
+                new Dice(5)
+            )
+            )
+                ->fullHouse()
+        );
     }
 
-    public function test_fullHouse(): void
+    /**
+     * @throws Exception
+     */
+    public function testYatzyScoresFifty(): void
     {
-        self::assertSame(18, Yatzy::fullHouse(6, 2, 2, 2, 6));
-        self::assertSame(0, Yatzy::fullHouse(2, 3, 4, 5, 6));
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(3)
+            )
+            )
+                ->yatzyScore()
+        );
+        self::assertSame(
+            50,
+            (
+            new Yatzy(
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1),
+                new Dice(1)
+            )
+            )
+                ->yatzyScore()
+        );
+        self::assertSame(
+            50,
+            (
+            new Yatzy(
+                new Dice(4),
+                new Dice(4),
+                new Dice(4),
+                new Dice(4),
+                new Dice(4)
+            )
+            )
+                ->yatzyScore()
+        );
+        self::assertSame(
+            50,
+            (
+            new Yatzy(
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6)
+            )
+            )
+                ->yatzyScore()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testASevenSidedDiceThrowsException(): void
+    {
+        $this->expectExceptionMessage('Dice must be an integer between one and six');
+
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(7),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(3)
+            )
+            )
+                ->yatzyScore()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAZeroSidedDiceThrowsException(): void
+    {
+        $this->expectExceptionMessage('Dice must be an integer between one and six');
+
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(0),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(3)
+            )
+            )
+                ->yatzyScore()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testANegativeSidedDiceThrowsException(): void
+    {
+        $this->expectExceptionMessage('Dice must be an integer between one and six');
+
+        self::assertSame(
+            0,
+            (
+            new Yatzy(
+                new Dice(-1),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(3)
+            )
+            )
+                ->yatzyScore()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAStringDiceThrowsException(): void
+    {
+        $this->expectExceptionMessage('Argument #1 ($dice) must be of type int, string given');
+
+        /** @noinspection PhpStrictTypeCheckingInspection */
+        self::assertSame(
+            0,
+            (new Yatzy(
+                new Dice('1'),
+                new Dice(6),
+                new Dice(6),
+                new Dice(6),
+                new Dice(3)
+            )
+            )
+                ->yatzyScore()
+        );
     }
 }
