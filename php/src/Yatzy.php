@@ -76,7 +76,7 @@ class Yatzy
 
     public function onePair(): int
     {
-        if (!in_array(2, $this->counts, true)) {
+        if (! in_array(2, $this->counts, true)) {
             return 0;
         }
 
@@ -165,8 +165,8 @@ class Yatzy
     private function isStraight(array $straight): bool
     {
         return array_reduce($straight, static function ($acc, $count) {
-                return $count === 1 ? ++$acc : $acc;
-            }, 0) === 5;
+            return $count === 1 ? ++$acc : $acc;
+        }, 0) === 5;
     }
 
     private function calculateCounts(): void
